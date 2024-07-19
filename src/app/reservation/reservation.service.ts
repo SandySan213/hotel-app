@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Reservation } from '../models/reservation';
 
 @Injectable({
@@ -10,6 +10,11 @@ export class ReservationService {
 
   // CRUD
 
+  constructor(){
+    let savedReservations = localStorage.getItem('reservations');
+    this.reservations = savedReservations? JSON.parse(savedReservations) : [] ;
+  }
+
   getReservations(): Reservation[] {
     return this.reservations;
 
@@ -20,18 +25,25 @@ export class ReservationService {
   }
 
   addReservation(reservation: Reservation): void {
+    reservation.id = Date.now().toString();
     this.reservations.push(reservation)
-    console.log(reservation);
+    // console.log(reservation);
+    localStorage.setItem("reservations", JSON.stringify(this.reservations));
   }
 
   deleteReservation(id: string): void {
     let index = this.reservations.findIndex(res => res.id === id);
     this.reservations.splice(index, 1);
+    localStorage.setItem("reservations", JSON.stringify(this.reservations));
+
   }
 
-  updateReservation(updateReservation: Reservation): void {
-    let index = this.reservations.findIndex(res => res.id === updateReservation.id);
+  updateReservation(id:string, updateReservation: Reservation): void {
+    let index = this.reservations.findIndex(res => res.id === id);
+    updateReservation.id = id;
     this.reservations[index] = updateReservation;
+    localStorage.setItem("reservations", JSON.stringify(this.reservations));
+
   
   }
 
